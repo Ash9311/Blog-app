@@ -43,17 +43,12 @@ app.get("/compose", function(req, res){
 });
 
 app.post("/compose", function(req, res){
-  const requestedPostId = req.params.postId;
+  
   const post = new Post ({
     title: req.body.postTitle,
     content: req.body.postBody
   });
-  Post.findOne({_id:requestedPostId},function(err,post){
-    res.render("post",{
-      title:post.title,
-      content: post.content
-    })
-  })
+  
 
   post.save(function(err){
     if(!err){
@@ -66,18 +61,14 @@ app.post("/compose", function(req, res){
 });
 
 app.get("/posts/:postId", function(req, res){
-  const requestedTitle = _.lowerCase(req.params.postName);
-  
-  posts.forEach(function(post){
-    const storedTitle = _.lowerCase(post.title);
-
-    if (storedTitle === requestedTitle) {
-      res.render("post", {
-        title: post.title,
-        content: post.content
-      });
-    }
-  });
+ 
+  const requestedPostId = req.params.postId;
+  Post.findOne({_id:requestedPostId},function(err,post){
+    res.render("post",{
+      title:post.title,
+      content: post.content
+    })
+  })
 
 });
 
