@@ -30,39 +30,44 @@ const Post = mongoose.model("Post", postSchema);
 //let posts = [];
 
 app.get("/", function(req, res){
+  Post.find({},function(err,posts){
   res.render("home", {
     startingContent: homeStartingContent,
     posts: posts
     });
 });
-
-Post.find({},function(err,posts){
-  res.render("home",{
-    startingContent:homeStartingContent,
-    posts:posts
-  });
-})
+});
 
 app.get("/compose", function(req, res){
   res.render("compose");
 });
 
 app.post("/compose", function(req, res){
-
+  const requestedPostId = req.params.postId;
   const post = new Post ({
     title: req.body.postTitle,
     content: req.body.postBody
   });
+  Post.findOne({_id:requestedPostId},function(err,post){
+    res.render("post",{
+      title:post.title,
+      content: post.content
+    })
+  })
 
-  post.save();
+  post.save(function(err){
+    if(!err){
+      res.redirect("/");
+    }
+  });
 
   res.redirect("/");
 
 });
 
-app.get("/posts/:postName", function(req, res){
+app.get("/posts/:postId", function(req, res){
   const requestedTitle = _.lowerCase(req.params.postName);
-
+  
   posts.forEach(function(post){
     const storedTitle = _.lowerCase(post.title);
 
@@ -75,6 +80,7 @@ app.get("/posts/:postName", function(req, res){
   });
 
 });
+
 
 app.get("/about", function(req, res){
   res.render("about", {aboutContent: aboutContent});
